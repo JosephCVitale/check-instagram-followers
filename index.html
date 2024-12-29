@@ -1,10 +1,88 @@
-<h1>Check Instagram Followers</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Follower Checker</title>
+</head>
+<body>
+    <h1>Check Instagram Followers</h1>
 
-<h3>Accounts That You Don't Follow Back:</32>
+    <h3>Upload </h3>
+    <form onsubmit="analyzeFollowers(event)">
+        <label for="followers">Upload "followers_1.json"</label><br>
+        <input type="file" id="followers" name="followers" accept=".json"><br><br>
+        <label for="following">Upload "following.json"</label><br>
+        <input type="file" id="following" name="following" accept=".json"><br><br>
+        <input type="submit" value="Submit">
+    </form>
 
+    <h3>Accounts That You Don't Follow Back:</h3>
+    <ul id="not-following-back"></ul>
 
-<h3>Accounts That Don't Follow You Back:</h3>
+    <h3>Accounts That Don't Follow You Back:</h3>
+    <ul id="not-followed-back"></ul>
 
+    <h3>How to Use:</h3>
+    <p>To use, first download your instagram data. In a desktop browser, navigate to <a href="instagram.com">Instagram</a>. 
+        Click "More" > "Settings" > "Meta Accounts Center" > "Your information and permissions" > "Download your information" > 
+        "Download or transfer information".
+        Select your instagram account > "Next" > "Some of your information" > "Followers and following" > "Download to device". 
+        Set date range as "All time". Set format to "JSON". Set media quality to "Low". Then click "Create files". 
+        Once the data is ready, download the file to your device and unzip it. Upload the specified files above and Submit.
+    
+    </p>
 
-<h3>How to Use:</h3>
-<p>fuck</p>
+    <script>
+        function analyzeFollowers(event) {
+            event.preventDefault();
+            const followersFile = event.target.followers.files[0];
+            const followingFile = event.target.following.files[0];
+            if (!followersFile || !followingFile) {
+                alert('Please upload both files.');
+                return;
+            }
+            const followersReader = new FileReader();
+            const followingReader = new FileReader();
+            followersReader.onload = function (e) {
+                const followerData = JSON.parse(e.target.result);
+                let followers = [];
+                for (const item of followerData){
+                    followers.push(item.string_list_data[0].value);
+                }
+                console.log(followers);
+                followingReader.onload = function (e) {
+                    const followingData = JSON.parse(e.target.result);
+                    let following = [];
+                    for(const item of followingData.relationships_following){
+                        following.push(item.string_list_data[0].value);
+                    }
+                    console.log(following);
+                    processAndDisplayResults(followers, following);
+                };
+                followingReader.readAsText(followingFile);
+            };
+            followersReader.readAsText(followersFile);
+        }
+
+        function processAndDisplayResults(followers, following) {
+            const followerSet = new Set(followers);
+            const followingSet = new Set(following);
+            const notFollowingBack = Array.from(followingSet).filter(user => !followerSet.has(user));
+            const notFollowedBack = Array.from(followerSet).filter(user => !followingSet.has(user));
+            displayResults('not-following-back', notFollowingBack);
+            displayResults('not-followed-back', notFollowedBack);
+        }
+
+        function displayResults(elementId, results) {
+            const container = document.getElementById(elementId);
+            container.innerHTML = ''; 
+            results.forEach(user => {
+                const li = document.createElement('li');
+                li.textContent = user;
+                container.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>
