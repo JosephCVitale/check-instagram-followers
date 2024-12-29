@@ -4,11 +4,88 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Instagram Follower Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            background-color: slategray;
+            color: white;
+            padding: 1rem 0;
+            margin: 0;
+        }
+        h3 {
+            color: slategray;
+            text-align: center;
+        }
+        form {
+            max-width: 600px;
+            margin: 2rem auto;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="file"] {
+            margin: 0.5rem 0;
+        }
+        input[type="submit"] {
+            background-color: slategray;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        input[type="submit"]:hover {
+            background-color: lightgray;
+        }
+        ul {
+            max-width: 600px;
+            margin: 1rem auto;
+            padding: 1rem;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            list-style-type: none;
+        }
+        ul li {
+            padding: 0.5rem;
+            border-bottom: 1px solid #ddd;
+        }
+        ul li:last-child {
+            border-bottom: none;
+        }
+        p {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        a {
+            color: slategray;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
     <h1>Check Instagram Followers</h1>
 
-    <h3>Upload </h3>
+    <h3>Upload</h3>
     <form onsubmit="analyzeFollowers(event)">
         <label for="followers">Upload "followers_1.json"</label><br>
         <input type="file" id="followers" name="followers" accept=".json"><br><br>
@@ -24,10 +101,11 @@
     <ul id="not-followed-back"></ul>
 
     <h3>How to Use:</h3>
-    <p>To use, first download your instagram data. In a desktop browser, navigate to <a href="instagram.com">Instagram</a>. 
+    <p>
+        To use, first download your Instagram data. In a desktop browser, navigate to <a href="https://instagram.com" target="_blank">Instagram</a>. 
         Click "More" > "Settings" > "Meta Accounts Center" > "Your information and permissions" > "Download your information" > 
         "Download or transfer information".
-        Select your instagram account > "Next" > "Some of your information" > "Followers and following" > "Download to device". 
+        Select your Instagram account > "Next" > "Some of your information" > "Followers and following" > "Download to device". 
         Set date range as "All time". Set format to "JSON". Set media quality to "Low". Then click "Create files". 
         Once the data is ready, download the file to your device and unzip it. Upload the specified files above and Submit.
     </p>
@@ -46,17 +124,15 @@
             followersReader.onload = function (e) {
                 const followerData = JSON.parse(e.target.result);
                 let followers = [];
-                for (const item of followerData){
+                for (const item of followerData) {
                     followers.push(item.string_list_data[0].value);
                 }
-                console.log(followers);
                 followingReader.onload = function (e) {
                     const followingData = JSON.parse(e.target.result);
                     let following = [];
-                    for(const item of followingData.relationships_following){
+                    for (const item of followingData.relationships_following) {
                         following.push(item.string_list_data[0].value);
                     }
-                    console.log(following);
                     processAndDisplayResults(followers, following);
                 };
                 followingReader.readAsText(followingFile);
@@ -75,7 +151,7 @@
 
         function displayResults(elementId, results) {
             const container = document.getElementById(elementId);
-            container.innerHTML = ''; 
+            container.innerHTML = '';
             results.forEach(user => {
                 const li = document.createElement('li');
                 li.textContent = user;
